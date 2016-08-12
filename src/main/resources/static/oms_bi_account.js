@@ -1,0 +1,4 @@
+[ {
+	"biAccount" : "admin",
+	"biPassword" : "kdadmin"
+} ]
