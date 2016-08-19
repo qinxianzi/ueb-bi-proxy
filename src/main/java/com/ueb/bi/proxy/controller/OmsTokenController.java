@@ -27,7 +27,7 @@ public class OmsTokenController {
 			String userId = paramsVo.getUserId();
 			String biAccount = paramsVo.getBiAccount();
 			String remoteAddr = request.getRemoteAddr();
-			String token = TokenUtil.generateToken(userId, biAccount, remoteAddr);
+			String token = TokenUtil.generateToken(userId, biAccount, remoteAddr, "123");
 			results.put("success", "0");
 			results.put("token", token);
 			results.put("message", "");

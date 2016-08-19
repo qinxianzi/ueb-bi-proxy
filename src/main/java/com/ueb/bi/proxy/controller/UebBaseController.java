@@ -221,7 +221,7 @@ public class UebBaseController {
 		try {
 			String filepath = this.getFilepath(filename);
 			output = new FileOutputStream(filepath);
-			output.write(content.getBytes());
+			output.write(content.getBytes(UebConstants.UTF8));
 			return filename;
 		} finally {
 			if (null != output) {

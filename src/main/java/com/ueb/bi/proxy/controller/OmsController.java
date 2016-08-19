@@ -30,13 +30,15 @@ public class OmsController extends UebBaseController {
 		OmsRequestVO requestVo = JSON.parseObject(reqParam, OmsRequestVO.class);
 		requestVo.verificationSysparams();
 		OmsSysParamsVO sysparamsVo = requestVo.getSysparams();
+		String clientHost = requestVo.getBizparams().getClientHost();
 
 		String sign = requestVo.getSign();
 		// String remoteAddr = request.getRemoteAddr();
-		String remoteAddr = this.getIpAddress(request);
-		//TokenUtil.verificationToken(sysparamsVo, sign, remoteAddr);
+		String remoteAddr = this.getIpAddress(request); // PHP服务器的IP
+		TokenUtil.verificationToken(sysparamsVo, sign, remoteAddr, clientHost);
 
-		String omsUserKey = TokenUtil.generateToken(sysparamsVo.getUserId(), sysparamsVo.getBiAccount(), remoteAddr);
+		String omsUserKey = TokenUtil.generateToken(sysparamsVo.getUserId(), sysparamsVo.getBiAccount(), remoteAddr,
+				clientHost);
 		OmsUriMappingVO omsUriMappingVo = omsService.vilidateByCode(sysparamsVo.getCode());
 		OmsUserVO omsUserVo = this.getOmsUserVoFromSession(request, omsUserKey);
 		if (null == omsUserVo) { // 该OMS用户尚未登陆bi
@@ -44,6 +46,7 @@ public class OmsController extends UebBaseController {
 			this.setOmsUserVo2Session(request, response, omsUserVo, omsUserKey); // 将OMS用户登陆信息保存到session中（不需要重复登陆BI）
 		}
 
+		response.setCharacterEncoding("UTF-8");
 		StringBuffer path = new StringBuffer("redirect:/app/main#");
 		path.append(omsUriMappingVo.getPath());
 		return path.toString();

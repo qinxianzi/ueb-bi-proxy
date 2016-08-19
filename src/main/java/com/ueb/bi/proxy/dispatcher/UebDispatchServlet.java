@@ -41,8 +41,9 @@ public class UebDispatchServlet extends DispatcherServlet {
 		logger.info("========{}, ========{}", request.getMethod(), requestUri);
 
 		String servletName = request.getServletContext().getServletContextName();
-		if (-1 != requestUri.indexOf(servletName)) {
+		if (StringUtils.isNotBlank(servletName) && -1 != requestUri.indexOf(servletName)) {
 			requestUri = requestUri.substring(servletName.length() + 1);
+			logger.info("*********************************", requestUri);
 		}
 		request.setAttribute(UebConstants.REAL_PATH, requestUri);
 

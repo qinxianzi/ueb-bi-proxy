@@ -11,14 +11,17 @@ import com.ueb.bi.proxy.vo.OmsSysParamsVO;
 
 public class TokenUtil {
 
-	public static String generateToken(String userId, String biAccount, String remoteAddr) throws Exception {
+	public static String generateToken(String userId, String biAccount, String remoteAddr, String clientHost)
+			throws Exception {
 		if (StringUtils.isBlank(remoteAddr)) {
 			throw new Exception("remoteAddr parameter cant't be null");
+		} else if (StringUtils.isBlank(clientHost)) {
+			throw new Exception("clientHost parameter cant't be null");
 		}
 
 		HashFunction hf = Hashing.sha256();
 		HashCode hashCode = hf.newHasher().putString(userId, UebConstants.UTF8).putString(remoteAddr, UebConstants.UTF8)
-				.putString(biAccount, UebConstants.UTF8).hash();
+				.putString(biAccount, UebConstants.UTF8).putString(clientHost, UebConstants.UTF8).hash();
 		byte[] encode = Base64.encodeBase64(hashCode.asBytes());
 		return new String(encode, UebConstants.UTF8);
 	}
@@ -28,14 +31,18 @@ public class TokenUtil {
 		return new String(b, UebConstants.UTF8);
 	}
 
-	public static boolean verificationToken(OmsSysParamsVO sysparamsVo, String token, String remoteAddr)
-			throws Exception {
+	public static boolean verificationToken(OmsSysParamsVO sysparamsVo, String token, String remoteAddr,
+			String clientHost) throws Exception {
 		if (StringUtils.isBlank(remoteAddr)) {
 			throw new Exception("remoteAddr parameter cant't be null");
+		} else if (StringUtils.isBlank(clientHost)) {
+			throw new Exception("clientHost parameter cant't be null");
 		}
 
+		// StringBuffer buffer = new StringBuffer(sysparamsVo.getUserId());
+		// buffer.append(remoteAddr).append(sysparamsVo.getBiAccount()).append(clientHost);
 		StringBuffer buffer = new StringBuffer(sysparamsVo.getUserId());
-		buffer.append(remoteAddr).append(sysparamsVo.getBiAccount());
+		buffer.append("172.16.6.55").append(sysparamsVo.getBiAccount()).append(clientHost);
 		String base64Str = encodeBase64(buffer.toString());
 		if (StringUtils.equals(token, base64Str)) {
 			return true;
@@ -43,10 +50,9 @@ public class TokenUtil {
 		throw new Exception("Illegal login user");
 	}
 
-	// public static void main(String[] args) throws
-	// UnsupportedEncodingException {
-	// String str = "1001127.0.0.1admin";
-	// byte[] encodeBase64 = Base64.encodeBase64(str.getBytes("UTF-8"));
-	// System.out.println(new String(encodeBase64, "UTF-8"));
-	// }
+//	public static void main(String[] args) throws UnsupportedEncodingException {
+//		String str = "1001172.16.6.55admin172.16.6.139";
+//		byte[] encodeBase64 = Base64.encodeBase64(str.getBytes("UTF-8"));
+//		System.out.println(new String(encodeBase64, "UTF-8"));
+//	}
 }
